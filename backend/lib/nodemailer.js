@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { ENV } from "./env.js";
 
 dotenv.config();
 
@@ -8,12 +9,17 @@ export const transporter = nodemailer.createTransport({
     port: 465,
     secure: true,
     auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: ENV.SMTP_USER,
+        pass: ENV.SMTP_PASS,
     },
 });
 
-export const sender = `${process.env.SENDER_NAME} <${process.env.SENDER_EMAIL}>`;
+export const sender = {
+    name: ENV.SENDER_NAME,
+    email: ENV.SENDER_EMAIL,
+};
+
+// export const sender = `${ENV.SENDER_NAME} <${ENV.SENDER_EMAIL}>`;
 
 transporter.verify((error, success) => {
     if (error) {
