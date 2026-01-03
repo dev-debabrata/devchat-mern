@@ -13,4 +13,6 @@ export const ENV = {
   SMTP_PASS: process.env.SMTP_PASS,
   SENDER_EMAIL: process.env.SENDER_EMAIL,
   SENDER_NAME: process.env.SENDER_NAME,
+  ARCJET_KEY: process.env.ARCJET_KEY,
+  ARCJET_ENV: process.env.ARCJET_ENV,
 };
