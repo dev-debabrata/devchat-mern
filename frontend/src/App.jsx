@@ -20,7 +20,7 @@ function App() {
   if (isCheckingAuth) return <PageLoader />;
 
   return (
-    <div className="min-h-screen bg-stone-400 flex items-center justify-center p-4 overflow-hidden">
+    <div className="min-h-screen bg-stone-400 flex items-center justify-center overflow-hidden">
 
       <Routes>
         <Route path="/" element={authUser ? <ChatPage /> : <Navigate to={"/login"} />} />
