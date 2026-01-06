@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router";
 import ChatPage from "./pages/ChatPage";
+import Profile from "./pages/Profile";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignupPage";
 import { useAuthStore } from "./store/useAuthStore";
@@ -7,6 +8,7 @@ import { useEffect } from "react";
 import PageLoader from "./components/PageLoader";
 
 import { Toaster } from "react-hot-toast";
+
 
 
 
@@ -24,6 +26,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={authUser ? <ChatPage /> : <Navigate to={"/login"} />} />
+        <Route path="/profile" element={authUser ? <Profile /> : <Navigate to={"/login"} />} />
         <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to={"/"} />} />
         <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />} />
       </Routes>
