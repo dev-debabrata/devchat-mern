@@ -45,8 +45,8 @@ function ChatContainer() {
                             >
                                 <div
                                     className={`chat-bubble relative ${msg.senderId === authUser._id
-                                            ? "bg-cyan-600 text-white"
-                                            : "bg-slate-800 text-slate-200"
+                                        ? "bg-cyan-600 text-white"
+                                        : "bg-stone-800 text-stone-200"
                                         }`}
                                 >
                                     {msg.image && (
@@ -62,7 +62,7 @@ function ChatContainer() {
                                 </div>
                             </div>
                         ))}
-                        {/* 👇 scroll target */}
+                        {/* scroll target */}
                         <div ref={messageEndRef} />
                     </div>
                 ) : isMessagesLoading ? (
