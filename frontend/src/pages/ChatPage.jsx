@@ -55,7 +55,7 @@ function ChatPage() {
             </div>
 
             {/* RIGHT SIDE */}
-            <div className="flex-1 flex flex-col bg-stone-700 rounded-r-2xl">
+            <div className="flex-1 flex flex-col bg-stone-800 rounded-r-2xl">
                 {selectedUser ? <ChatContainer /> : <NoConversationPlaceholder />}
             </div>
         </div>

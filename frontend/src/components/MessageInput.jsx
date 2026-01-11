@@ -45,7 +45,7 @@ function MessageInput() {
     };
 
     return (
-        <div className="p-4 border-t border-stone-700/50">
+        <div className="p-4 border-t border-stone-500/50 ">
             {imagePreview && (
                 <div className="max-w-3xl mx-auto mb-3 flex items-center">
                     <div className="relative">
@@ -73,7 +73,7 @@ function MessageInput() {
                         setText(e.target.value);
                         isSoundEnabled && playRandomKeyStrokeSound();
                     }}
-                    className="flex-1 text-stone-100 bg-stone-800/50 border border-stone-700/50 rounded-lg py-2 px-4"
+                    className="flex-1 text-stone-100 bg-stone-900/50 border border-stone-500/50 rounded-lg py-2 px-4"
                     placeholder="Type your message..."
                 />
 
@@ -88,7 +88,7 @@ function MessageInput() {
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className={`bg-stone-800/50 text-stone-400 hover:text-stone-200 rounded-lg px-4 transition-colors ${imagePreview ? "text-cyan-500" : ""
+                    className={`bg-stone-900/50 text-stone-400 hover:text-stone-200 rounded-lg px-4 transition-colors ${imagePreview ? "text-cyan-500" : ""
                         }`}
                 >
                     <ImageIcon className="w-5 h-5" />
@@ -96,7 +96,7 @@ function MessageInput() {
                 <button
                     type="submit"
                     disabled={!text.trim() && !imagePreview}
-                    className="bg-gradient-to-r from-stone-900 to-stone-800 text-white rounded-lg px-4 py-2 font-medium hover:from-stone-700 hover:to-stone-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="bg-gradient-to-r from-stone-950 to-stone-900 text-white rounded-lg px-4 py-2 font-medium hover:from-stone-700 hover:to-stone-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                     <SendIcon className="w-5 h-5" />
                 </button>
