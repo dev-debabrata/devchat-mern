@@ -1,13 +1,12 @@
 import { Navigate, Route, Routes } from "react-router";
+import { useAuthStore } from "./store/useAuthStore";
+import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import ChatPage from "./pages/ChatPage";
 import Profile from "./pages/Profile";
 import LoginPage from "./pages/Auth/LoginPage";
 import SignUpPage from "./pages/Auth/SignupPage";
-import { useAuthStore } from "./store/useAuthStore";
-import { useEffect } from "react";
 import PageLoader from "./components/PageLoader";
-
-import { Toaster } from "react-hot-toast";
 
 
 
@@ -22,7 +21,7 @@ function App() {
   if (isCheckingAuth) return <PageLoader />;
 
   return (
-    <div className="min-h-screen bg-stone-300 flex items-center justify-center overflow-hidden">
+    <div className="min-h-screen bg-stone-700 flex items-center justify-center overflow-hidden">
 
       <Routes>
         <Route path="/" element={authUser ? <ChatPage /> : <Navigate to={"/login"} />} />

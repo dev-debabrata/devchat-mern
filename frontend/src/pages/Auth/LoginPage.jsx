@@ -66,7 +66,7 @@ function LoginPage() {
 
                 {/* SUBMIT BUTTON */}
                 <button
-                    className="w-full bg-stone-500 text-white rounded-lg py-2.5 font-medium hover:bg-stone-600 focus:ring-2 focus:ring-stone-500 cursor-pointer"
+                    className="w-full bg-stone-800 text-white rounded-lg py-2.5 font-medium hover:bg-stone-700 focus:ring-2 focus:ring-stone-500 cursor-pointer"
                     type="submit"
                     disabled={isLoggingIn}>
                     {isLoggingIn ? (

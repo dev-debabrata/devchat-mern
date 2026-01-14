@@ -8,10 +8,16 @@ import NoConversationPlaceholder from "../components/NoConversationPlaceholder";
 import { useAuthStore } from "../store/useAuthStore";
 
 import { LogOutIcon } from "lucide-react";
+import { useEffect } from "react";
 
 function ChatPage() {
     const { logout, authUser } = useAuthStore();
-    const { activeTab, selectedUser } = useChatStore();
+    const { activeTab, selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
+
+    useEffect(() => {
+        subscribeToMessages();
+        return () => unsubscribeFromMessages();
+    }, [subscribeToMessages, unsubscribeFromMessages]);
 
     return (
         <div className="relative flex w-full max-w-6xl h-screen mx-auto py-4 overflow-hidden">

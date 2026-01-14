@@ -6,8 +6,10 @@ import UserProfileModal from "./UserProfileModal";
 
 function ChatHeader() {
     const { selectedUser, setSelectedUser } = useChatStore();
-    const { onlineUsers } = useAuthStore();
+    const { onlineUsers, socket } = useAuthStore();
+
     const [showModal, setShowModal] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
 
     const isOnline =
         selectedUser && onlineUsers.includes(selectedUser._id);
@@ -21,19 +23,44 @@ function ChatHeader() {
         return () => window.removeEventListener("keydown", handleEscKey);
     }, [setSelectedUser]);
 
+    // 👇 Typing listener
+    useEffect(() => {
+        if (!socket || !selectedUser) return;
+
+        socket.on("typing", ({ senderId }) => {
+            if (senderId === selectedUser._id) {
+                setIsTyping(true);
+            }
+        });
+
+        socket.on("stopTyping", ({ senderId }) => {
+            if (senderId === selectedUser._id) {
+                setIsTyping(false);
+            }
+        });
+
+        return () => {
+            socket.off("typing");
+            socket.off("stopTyping");
+        };
+    }, [socket, selectedUser]);
+
+    if (!selectedUser) return null;
+
     return (
         <>
             <div className="flex justify-between items-center bg-stone-900/50 border-b border-stone-500/50 max-h-[80px] px-6 flex-1 rounded-tr-2xl">
                 <div
                     onClick={() => setShowModal(true)}
-                    className="flex items-center space-x-3 cursor-pointer">
-
+                    className="flex items-center space-x-3 cursor-pointer"
+                >
                     <div className="relative">
                         <img
                             src={selectedUser.profilePic || "/avatar.png"}
                             alt={selectedUser.fullName}
                             className="w-12 h-12 rounded-full object-cover"
                         />
+
                         {isOnline && (
                             <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-stone-800"></span>
                         )}
@@ -43,8 +70,9 @@ function ChatHeader() {
                         <h3 className="text-stone-200 font-medium">
                             {selectedUser.fullName}
                         </h3>
+
                         <p className="text-stone-400 text-sm">
-                            {isOnline ? "Online" : "Offline"}
+                            {isTyping ? "Typing..." : isOnline ? "Online" : "Offline"}
                         </p>
                     </div>
                 </div>
@@ -54,8 +82,6 @@ function ChatHeader() {
                 </button>
             </div>
 
-
-            {/* Modal */}
             {showModal && (
                 <UserProfileModal
                     user={selectedUser}
@@ -68,3 +94,76 @@ function ChatHeader() {
 }
 
 export default ChatHeader;
+
+
+
+// import { XIcon } from "lucide-react";
+// import { useChatStore } from "../store/useChatStore";
+// import { useEffect, useState } from "react";
+// import { useAuthStore } from "../store/useAuthStore";
+// import UserProfileModal from "./UserProfileModal";
+
+// function ChatHeader() {
+//     const { selectedUser, setSelectedUser } = useChatStore();
+//     const { onlineUsers } = useAuthStore();
+//     const [showModal, setShowModal] = useState(false);
+
+//     const isOnline =
+//         selectedUser && onlineUsers.includes(selectedUser._id);
+
+//     useEffect(() => {
+//         const handleEscKey = (event) => {
+//             if (event.key === "Escape") setSelectedUser(null);
+//         };
+
+//         window.addEventListener("keydown", handleEscKey);
+//         return () => window.removeEventListener("keydown", handleEscKey);
+//     }, [setSelectedUser]);
+
+//     return (
+//         <>
+//             <div className="flex justify-between items-center bg-stone-900/50 border-b border-stone-500/50 max-h-[80px] px-6 flex-1 rounded-tr-2xl">
+//                 <div
+//                     onClick={() => setShowModal(true)}
+//                     className="flex items-center space-x-3 cursor-pointer">
+
+//                     <div className="relative">
+//                         <img
+//                             src={selectedUser.profilePic || "/avatar.png"}
+//                             alt={selectedUser.fullName}
+//                             className="w-12 h-12 rounded-full object-cover"
+//                         />
+//                         {isOnline && (
+//                             <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-stone-800"></span>
+//                         )}
+//                     </div>
+
+//                     <div>
+//                         <h3 className="text-stone-200 font-medium">
+//                             {selectedUser.fullName}
+//                         </h3>
+//                         <p className="text-stone-400 text-sm">
+//                             {isOnline ? "Online" : "Offline"}
+//                         </p>
+//                     </div>
+//                 </div>
+
+//                 <button onClick={() => setSelectedUser(null)}>
+//                     <XIcon className="w-5 h-5 text-stone-400 hover:text-stone-200 transition-colors cursor-pointer" />
+//                 </button>
+//             </div>
+
+
+//             {/* Modal */}
+//             {showModal && (
+//                 <UserProfileModal
+//                     user={selectedUser}
+//                     isOnline={isOnline}
+//                     onClose={() => setShowModal(false)}
+//                 />
+//             )}
+//         </>
+//     );
+// }
+
+// export default ChatHeader;

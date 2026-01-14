@@ -5,7 +5,7 @@ import NoChatsFound from "./NoChatsFound";
 import { useAuthStore } from "../store/useAuthStore";
 
 function ChatsList() {
-    const { getMyChatPartners, chats, isUsersLoading, setSelectedUser } = useChatStore();
+    const { getMyChatPartners, chats, isUsersLoading, setSelectedUser, clearUnreadForUser } = useChatStore();
     const { onlineUsers } = useAuthStore();
 
     useEffect(() => {
@@ -21,10 +21,15 @@ function ChatsList() {
                 <div
                     key={chat._id}
                     className="bg-cyan-500/10 p-4 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition-colors"
-                    onClick={() => setSelectedUser(chat)}
+                    onClick={() => {
+                        setSelectedUser(chat);
+                        clearUnreadForUser(chat._id);
+                    }}
+
                 >
-                    <div className="flex items-center gap-3">
-                        <div className={`avatar ${onlineUsers.includes(chat._id) ? "online" : "offline"}`}>
+                    <div className="flex items-center justify-between gap-3">
+
+                        <div className="flex items-center gap-3">
                             <div className="relative">
                                 <img
                                     src={chat.profilePic || "/avatar.png"}
@@ -37,11 +42,21 @@ function ChatsList() {
                                 )}
                             </div>
 
+                            <h4 className="text-stone-200 font-medium truncate">
+                                {chat.fullName}
+                            </h4>
                         </div>
-                        <h4 className="text-stone-200 font-medium truncate">{chat.fullName}</h4>
+
+                        {chat.unreadCount > 0 && (
+                            <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                {chat.unreadCount}
+                            </span>
+                        )}
+
                     </div>
                 </div>
             ))}
+
         </>
     );
 }

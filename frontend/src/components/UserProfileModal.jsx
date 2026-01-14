@@ -21,11 +21,16 @@ function UserProfileModal({ user, isOnline, onClose }) {
 
                 {/* Profile */}
                 <div className="flex flex-col items-center text-center my-20 space-y-4">
-                    <img
-                        src={user.profilePic || "/avatar.png"}
-                        alt={user.fullName}
-                        className="w-28 h-28 rounded-full object-cover"
-                    />
+                    <div className="relative">
+                        <img
+                            src={user.profilePic || "/avatar.png"}
+                            alt={user.fullName}
+                            className="w-28 h-28 rounded-full object-cover"
+                        />
+                        {isOnline && (
+                            <span className="absolute bottom-1 right-3 h-4 w-4 rounded-full bg-green-500 border-2 border-stone-800"></span>
+                        )}
+                    </div>
 
                     <div>
                         <h2 className="text-xl font-semibold text-white mb-1">
