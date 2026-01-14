@@ -18,7 +18,7 @@ const io = new Server(server, {
 io.use(socketAuthMiddleware);
 
 
-const userSocketMap = {}; // {userId: socketId}
+const userSocketMap = {};
 
 export function getReceiverSocketId(userId) {
   return userSocketMap[String(userId)];
@@ -33,7 +33,7 @@ io.on("connection", (socket) => {
 
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  // ✅ Typing event
+
   socket.on("typing", ({ senderId, receiverId }) => {
     const receiverSocketId = userSocketMap[String(receiverId)];
 
@@ -42,7 +42,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // ✅ Stop typing event
   socket.on("stopTyping", ({ senderId, receiverId }) => {
     const receiverSocketId = userSocketMap[String(receiverId)];
 

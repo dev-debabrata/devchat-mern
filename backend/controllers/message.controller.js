@@ -15,16 +15,26 @@ export const getAllContacts = async (req, res) => {
   }
 };
 
+
 export const getMessagesByUserId = async (req, res) => {
   try {
     const myId = req.user._id;
     const { id: userToChatId } = req.params;
 
-    // ✅ Mark all incoming messages as seen
-    await Message.updateMany(
+    const result = await Message.updateMany(
       { senderId: userToChatId, receiverId: myId, seen: false },
       { seen: true }
     );
+
+    if (result.modifiedCount > 0) {
+      const senderSocketId = getReceiverSocketId(userToChatId);
+
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("messagesSeen", {
+          from: myId,
+        });
+      }
+    }
 
     const messages = await Message.find({
       $or: [
@@ -33,33 +43,12 @@ export const getMessagesByUserId = async (req, res) => {
       ],
     }).sort({ createdAt: 1 });
 
-    res.status(200).json(messages);
-  } catch (error) {
-    console.log("Error in getMessages controller: ", error.message);
-    res.status(500).json({ error: "Internal server error" });
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-
-
-// export const getMessagesByUserId = async (req, res) => {
-//   try {
-//     const myId = req.user._id;
-//     const { id: userToChatId } = req.params;
-
-//     const messages = await Message.find({
-//       $or: [
-//         { senderId: myId, receiverId: userToChatId },
-//         { senderId: userToChatId, receiverId: myId },
-//       ],
-//     });
-
-//     res.status(200).json(messages);
-//   } catch (error) {
-//     console.log("Error in getMessages controller: ", error.message);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
 
 export const sendMessage = async (req, res) => {
   try {
@@ -92,19 +81,234 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
 
+
     await newMessage.save();
 
     const receiverSocketId = getReceiverSocketId(receiverId);
+    const senderSocketId = getReceiverSocketId(senderId);
+
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("newMessage", newMessage);
+    }
+
     res.status(201).json(newMessage);
+
+    // await newMessage.save();
+
+    // const receiverSocketId = getReceiverSocketId(receiverId);
+    // if (receiverSocketId) {
+    //   io.to(receiverSocketId).emit("newMessage", newMessage);
+    // }
+
+    // res.status(201).json(newMessage);
   } catch (error) {
     console.log("Error in sendMessage controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+export const getChatPartners = async (req, res) => {
+  try {
+    const loggedInUserId = req.user._id;
+
+    // 1. Get last message per conversation
+    const conversations = await Message.aggregate([
+      {
+        $match: {
+          $or: [
+            { senderId: loggedInUserId },
+            { receiverId: loggedInUserId },
+          ],
+        },
+      },
+      {
+        $project: {
+          chatPartner: {
+            $cond: [
+              { $eq: ["$senderId", loggedInUserId] },
+              "$receiverId",
+              "$senderId",
+            ],
+          },
+          createdAt: 1,
+        },
+      },
+      {
+        $group: {
+          _id: "$chatPartner",
+          lastMessageAt: { $max: "$createdAt" },
+        },
+      },
+      {
+        $sort: { lastMessageAt: -1 },
+      },
+    ]);
+
+    const partnerIds = conversations.map((c) => c._id);
+
+    const users = await User.find({ _id: { $in: partnerIds } }).select("-password");
+
+    // Maintain sorted order
+    const orderedUsers = partnerIds.map((id) =>
+      users.find((u) => u._id.toString() === id.toString())
+    );
+
+    // Get unread counts
+    const unreadCounts = await Message.aggregate([
+      {
+        $match: {
+          receiverId: loggedInUserId,
+          seen: false,
+        },
+      },
+      {
+        $group: {
+          _id: "$senderId",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const unreadMap = {};
+    unreadCounts.forEach((u) => {
+      unreadMap[u._id.toString()] = u.count;
+    });
+
+    const final = orderedUsers.map((user) => ({
+      ...user.toObject(),
+      unreadCount: unreadMap[user._id.toString()] || 0,
+    }));
+
+    res.status(200).json(final);
+  } catch (error) {
+    console.error("Error in getChatPartners:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+
+// export const getMessagesByUserId = async (req, res) => {
+//   try {
+//     const myId = req.user._id;
+//     const { id: userToChatId } = req.params;
+
+//     // ✅ Mark all incoming messages as seen
+//     await Message.updateMany(
+//       { senderId: userToChatId, receiverId: myId, seen: false },
+//       { seen: true }
+//     );
+
+//     const senderSocketId = getReceiverSocketId(userToChatId);
+//     if (senderSocketId) {
+//       io.to(senderSocketId).emit("messagesSeen", {
+//         from: myId,
+//       });
+//     }
+
+//     const messages = await Message.find({
+//       $or: [
+//         { senderId: myId, receiverId: userToChatId },
+//         { senderId: userToChatId, receiverId: myId },
+//       ],
+//     }).sort({ createdAt: 1 });
+
+//     res.status(200).json(messages);
+//   } catch (error) {
+//     console.log("Error in getMessages controller: ", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+
+
+// export const getMessagesByUserId = async (req, res) => {
+//   try {
+//     const myId = req.user._id;
+//     const { id: userToChatId } = req.params;
+
+//     const messages = await Message.find({
+//       $or: [
+//         { senderId: myId, receiverId: userToChatId },
+//         { senderId: userToChatId, receiverId: myId },
+//       ],
+//     });
+
+//     res.status(200).json(messages);
+//   } catch (error) {
+//     console.log("Error in getMessages controller: ", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+
+
+// export const getChatPartners = async (req, res) => {
+//   try {
+//     const loggedInUserId = req.user._id;
+
+//     // 1. Get all chat partners
+//     const messages = await Message.find({
+//       $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
+//     });
+
+//     const chatPartnerIds = [
+//       ...new Set(
+//         messages.map((msg) =>
+//           msg.senderId.toString() === loggedInUserId.toString()
+//             ? msg.receiverId.toString()
+//             : msg.senderId.toString()
+//         )
+//       ),
+//     ];
+
+//     const chatPartners = await User.find({
+//       _id: { $in: chatPartnerIds },
+//     }).select("-password");
+
+//     // 2. Count unread messages per partner
+//     const unreadCounts = await Message.aggregate([
+//       {
+//         $match: {
+//           receiverId: loggedInUserId,
+//           seen: false,
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: "$senderId",
+//           count: { $sum: 1 },
+//         },
+//       },
+//     ]);
+
+//     // 3. Convert unreadCounts to map for easy lookup
+//     const unreadMap = {};
+//     unreadCounts.forEach((item) => {
+//       unreadMap[item._id.toString()] = item.count;
+//     });
+
+//     // 4. Attach unreadCount to each chat partner
+//     const finalResult = chatPartners.map((user) => ({
+//       ...user.toObject(),
+//       unreadCount: unreadMap[user._id.toString()] || 0,
+//     }));
+
+//     res.status(200).json(finalResult);
+//   } catch (error) {
+//     console.error("Error in getChatPartners: ", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+
+
 
 // export const getChatPartners = async (req, res) => {
 //   try {
@@ -134,62 +338,5 @@ export const sendMessage = async (req, res) => {
 //   }
 // };
 
-export const getChatPartners = async (req, res) => {
-  try {
-    const loggedInUserId = req.user._id;
-
-    // 1. Get all chat partners
-    const messages = await Message.find({
-      $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
-    });
-
-    const chatPartnerIds = [
-      ...new Set(
-        messages.map((msg) =>
-          msg.senderId.toString() === loggedInUserId.toString()
-            ? msg.receiverId.toString()
-            : msg.senderId.toString()
-        )
-      ),
-    ];
-
-    const chatPartners = await User.find({
-      _id: { $in: chatPartnerIds },
-    }).select("-password");
-
-    // 2. Count unread messages per partner
-    const unreadCounts = await Message.aggregate([
-      {
-        $match: {
-          receiverId: loggedInUserId,
-          seen: false,
-        },
-      },
-      {
-        $group: {
-          _id: "$senderId",
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-
-    // 3. Convert unreadCounts to map for easy lookup
-    const unreadMap = {};
-    unreadCounts.forEach((item) => {
-      unreadMap[item._id.toString()] = item.count;
-    });
-
-    // 4. Attach unreadCount to each chat partner
-    const finalResult = chatPartners.map((user) => ({
-      ...user.toObject(),
-      unreadCount: unreadMap[user._id.toString()] || 0,
-    }));
-
-    res.status(200).json(finalResult);
-  } catch (error) {
-    console.error("Error in getChatPartners: ", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
 
 

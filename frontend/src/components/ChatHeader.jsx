@@ -71,9 +71,27 @@ function ChatHeader() {
                             {selectedUser.fullName}
                         </h3>
 
-                        <p className="text-stone-400 text-sm">
-                            {isTyping ? "Typing..." : isOnline ? "Online" : "Offline"}
+
+                        <p className="text-stone-400 text-sm flex items-center gap-1">
+                            {isTyping ? (
+                                <>
+                                    Typing
+                                    <span className="flex gap-1 mt-3">
+                                        <span className="w-1 h-1 bg-stone-400 rounded-full animate-bounce [animation-delay:0ms]"></span>
+                                        <span className="w-1 h-1 bg-stone-400 rounded-full animate-bounce [animation-delay:150ms]"></span>
+                                        <span className="w-1 h-1 bg-stone-400 rounded-full animate-bounce [animation-delay:300ms]"></span>
+                                    </span>
+                                </>
+                            ) : isOnline ? (
+                                "Online"
+                            ) : (
+                                "Offline"
+                            )}
                         </p>
+
+                        {/* <p className="text-stone-400 text-sm">
+                            {isTyping ? "Typing..." : isOnline ? "Online" : "Offline"}
+                        </p> */}
                     </div>
                 </div>
 

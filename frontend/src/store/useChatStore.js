@@ -93,125 +93,198 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+
   subscribeToMessages: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
 
-    // prevent duplicate listeners
     socket.off("newMessage");
     socket.off("messagesSeen");
 
-    // When a new message arrives
     socket.on("newMessage", async (newMessage) => {
       const state = get();
       const { selectedUser, chats, messages } = state;
+      const { authUser } = useAuthStore.getState();
 
-      // If currently chatting with this user → add message
-      if (selectedUser?._id === newMessage.senderId) {
+      // 1. Update open chat messages
+      if (
+        String(selectedUser?._id) === String(newMessage.senderId) ||
+        String(selectedUser?._id) === String(newMessage.receiverId)
+      ) {
         set({ messages: [...messages, newMessage] });
       }
 
-      // If chats not loaded yet, fetch again
       if (!chats || chats.length === 0) {
         await state.getMyChatPartners();
         return;
       }
 
-      // Update unread count
-      const updated = chats.map(chat => {
-        if (chat._id === newMessage.senderId) {
-          return {
-            ...chat,
-            unreadCount:
-              selectedUser?._id === chat._id
-                ? 0
-                : (chat.unreadCount || 0) + 1,
-          };
-        }
-        return chat;
-      });
+      // 2. Find actual chat partner
+      const partnerId =
+        String(newMessage.senderId) === String(authUser._id)
+          ? String(newMessage.receiverId)
+          : String(newMessage.senderId);
 
-      // Move sender to top
-      const sorted = [
-        updated.find(c => c._id === newMessage.senderId),
-        ...updated.filter(c => c._id !== newMessage.senderId),
-      ];
+      let updatedChats = [...chats];
 
-      set({ chats: sorted });
+      const index = updatedChats.findIndex(
+        (chat) => String(chat._id) === partnerId
+      );
+
+      if (index !== -1) {
+        const chat = updatedChats[index];
+
+        const updatedChat = {
+          ...chat,
+          unreadCount:
+            String(selectedUser?._id) === partnerId
+              ? 0
+              : (chat.unreadCount || 0) + 1,
+        };
+
+        updatedChats.splice(index, 1);
+        updatedChats.unshift(updatedChat);
+
+        set({ chats: updatedChats });
+      } else {
+        await state.getMyChatPartners();
+      }
     });
 
-    // 🔥 THIS IS THE PART YOU WERE MISSING
-    // When backend says messages were read
     socket.on("messagesSeen", ({ from }) => {
+      const { authUser } = useAuthStore.getState();
+
       set((state) => ({
-        chats: state.chats.map(chat =>
-          chat._id === from
-            ? { ...chat, unreadCount: 0 }
-            : chat
+        messages: state.messages.map((msg) =>
+          msg.senderId === authUser._id && msg.receiverId === from
+            ? { ...msg, seen: true }
+            : msg
         ),
       }));
     });
+
   },
-
-
-  // subscribeToMessages: () => {
-  //   const socket = useAuthStore.getState().socket;
-  //   if (!socket) return;
-
-  //   socket.off("newMessage");
-
-  //   socket.on("newMessage", async (newMessage) => {
-  //     const state = get();
-  //     const { selectedUser, chats, messages } = state;
-
-  //     // 1. If open chat → update messages
-  //     if (selectedUser?._id === newMessage.senderId) {
-  //       set({ messages: [...messages, newMessage] });
-  //     }
-
-  //     // 2. If chats not loaded yet → fetch them
-  //     if (!chats || chats.length === 0) {
-  //       await state.getMyChatPartners();
-  //       return;
-  //     }
-
-  //     // 3. If sender not in list → refetch chats
-  //     const exists = chats.some(c => c._id === newMessage.senderId);
-  //     if (!exists) {
-  //       await state.getMyChatPartners();
-  //       return;
-  //     }
-
-  //     // 4. Update unread + move to top
-  //     const updated = chats.map(chat => {
-  //       if (chat._id === newMessage.senderId) {
-  //         return {
-  //           ...chat,
-  //           unreadCount:
-  //             selectedUser?._id === chat._id
-  //               ? 0
-  //               : (chat.unreadCount || 0) + 1,
-  //         };
-  //       }
-  //       return chat;
-  //     });
-
-  //     const sorted = [
-  //       updated.find(c => c._id === newMessage.senderId),
-  //       ...updated.filter(c => c._id !== newMessage.senderId),
-  //     ];
-
-  //     set({ chats: sorted });
-  //   });
-  // },
-
-
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
   },
 }));
+
+
+
+
+// subscribeToMessages: () => {
+//   const socket = useAuthStore.getState().socket;
+//   if (!socket) return;
+
+//   // prevent duplicate listeners
+//   socket.off("newMessage");
+//   socket.off("messagesSeen");
+
+//   // When a new message arrives
+//   socket.on("newMessage", async (newMessage) => {
+//     const state = get();
+//     const { selectedUser, chats, messages } = state;
+
+//     // If currently chatting with this user → add message
+//     if (selectedUser?._id === newMessage.senderId) {
+//       set({ messages: [...messages, newMessage] });
+//     }
+
+//     // If chats not loaded yet, fetch again
+//     if (!chats || chats.length === 0) {
+//       await state.getMyChatPartners();
+//       return;
+//     }
+
+//     // Update unread count
+//     const updated = chats.map(chat => {
+//       if (chat._id === newMessage.senderId) {
+//         return {
+//           ...chat,
+//           unreadCount:
+//             selectedUser?._id === chat._id
+//               ? 0
+//               : (chat.unreadCount || 0) + 1,
+//         };
+//       }
+//       return chat;
+//     });
+
+//     // Move sender to top
+//     const sorted = [
+//       updated.find(c => c._id === newMessage.senderId),
+//       ...updated.filter(c => c._id !== newMessage.senderId),
+//     ];
+
+//     set({ chats: sorted });
+//   });
+
+//   // 🔥 THIS IS THE PART YOU WERE MISSING
+//   // When backend says messages were read
+//   socket.on("messagesSeen", ({ from }) => {
+//     set((state) => ({
+//       chats: state.chats.map(chat =>
+//         chat._id === from
+//           ? { ...chat, unreadCount: 0 }
+//           : chat
+//       ),
+//     }));
+//   });
+// },
+
+
+// subscribeToMessages: () => {
+//   const socket = useAuthStore.getState().socket;
+//   if (!socket) return;
+
+//   socket.off("newMessage");
+
+//   socket.on("newMessage", async (newMessage) => {
+//     const state = get();
+//     const { selectedUser, chats, messages } = state;
+
+//     // 1. If open chat → update messages
+//     if (selectedUser?._id === newMessage.senderId) {
+//       set({ messages: [...messages, newMessage] });
+//     }
+
+//     // 2. If chats not loaded yet → fetch them
+//     if (!chats || chats.length === 0) {
+//       await state.getMyChatPartners();
+//       return;
+//     }
+
+//     // 3. If sender not in list → refetch chats
+//     const exists = chats.some(c => c._id === newMessage.senderId);
+//     if (!exists) {
+//       await state.getMyChatPartners();
+//       return;
+//     }
+
+//     // 4. Update unread + move to top
+//     const updated = chats.map(chat => {
+//       if (chat._id === newMessage.senderId) {
+//         return {
+//           ...chat,
+//           unreadCount:
+//             selectedUser?._id === chat._id
+//               ? 0
+//               : (chat.unreadCount || 0) + 1,
+//         };
+//       }
+//       return chat;
+//     });
+
+//     const sorted = [
+//       updated.find(c => c._id === newMessage.senderId),
+//       ...updated.filter(c => c._id !== newMessage.senderId),
+//     ];
+
+//     set({ chats: sorted });
+//   });
+// },
 
 
 

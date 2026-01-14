@@ -5,12 +5,33 @@ import NoChatsFound from "./NoChatsFound";
 import { useAuthStore } from "../store/useAuthStore";
 
 function ChatsList() {
-    const { getMyChatPartners, chats, isUsersLoading, setSelectedUser, clearUnreadForUser } = useChatStore();
-    const { onlineUsers } = useAuthStore();
+    const {
+        getMyChatPartners,
+        chats,
+        isUsersLoading,
+        setSelectedUser,
+        clearUnreadForUser,
+        subscribeToMessages,
+        unsubscribeFromMessages,
+    } = useChatStore();
+
+    const { onlineUsers, socket } = useAuthStore();
 
     useEffect(() => {
         getMyChatPartners();
     }, [getMyChatPartners]);
+
+    useEffect(() => {
+        getMyChatPartners();
+    }, [getMyChatPartners]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        subscribeToMessages();
+        return () => unsubscribeFromMessages();
+    }, [socket]);
+
 
     if (isUsersLoading) return <UsersLoadingSkeleton />;
     if (chats.length === 0) return <NoChatsFound />;
@@ -25,10 +46,8 @@ function ChatsList() {
                         setSelectedUser(chat);
                         clearUnreadForUser(chat._id);
                     }}
-
                 >
                     <div className="flex items-center justify-between gap-3">
-
                         <div className="flex items-center gap-3">
                             <div className="relative">
                                 <img
@@ -36,12 +55,10 @@ function ChatsList() {
                                     alt={chat.fullName}
                                     className="size-12 rounded-full object-cover"
                                 />
-
                                 {onlineUsers.includes(chat._id) && (
                                     <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-stone-900"></span>
                                 )}
                             </div>
-
                             <h4 className="text-stone-200 font-medium truncate">
                                 {chat.fullName}
                             </h4>
@@ -52,12 +69,11 @@ function ChatsList() {
                                 {chat.unreadCount}
                             </span>
                         )}
-
                     </div>
                 </div>
             ))}
-
         </>
     );
 }
+
 export default ChatsList;

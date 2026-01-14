@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useKeyboardSound from "../hooks/useKeyboardSound";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
@@ -11,6 +11,7 @@ function MessageInput() {
     const [text, setText] = useState("");
     const [imagePreview, setImagePreview] = useState(null);
 
+    const inputRef = useRef(null);
     const fileInputRef = useRef(null);
     const typingTimeoutRef = useRef(null);
 
@@ -29,7 +30,6 @@ function MessageInput() {
             image: imagePreview,
         });
 
-        // tell other user typing stopped
         if (socket && selectedUser && authUser) {
             socket.emit("stopTyping", {
                 senderId: authUser._id,
@@ -51,10 +51,8 @@ function MessageInput() {
             receiverId: selectedUser._id,
         });
 
-        // clear old timeout
         clearTimeout(typingTimeoutRef.current);
 
-        // emit stopTyping after user stops typing
         typingTimeoutRef.current = setTimeout(() => {
             socket.emit("stopTyping", {
                 senderId: authUser._id,
@@ -82,6 +80,13 @@ function MessageInput() {
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
+    useEffect(() => {
+        if (selectedUser && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [selectedUser]);
+
+
     return (
         <div className="p-4 border-t border-stone-500/50">
             {imagePreview && (
@@ -108,6 +113,7 @@ function MessageInput() {
                 className="max-w-3xl mx-auto flex space-x-4"
             >
                 <input
+                    ref={inputRef}
                     type="text"
                     value={text}
                     onChange={(e) => {
