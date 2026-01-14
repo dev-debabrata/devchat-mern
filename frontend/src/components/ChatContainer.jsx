@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import ChatHeader from "./ChatHeader";
@@ -31,8 +31,9 @@ function ChatContainer() {
     } = useChatStore();
 
     const { authUser } = useAuthStore();
-    const messageEndRef = useRef(null);
+    const containerRef = useRef(null);
 
+    // Fetch messages + socket
     useEffect(() => {
         if (!selectedUser) return;
 
@@ -42,15 +43,22 @@ function ChatContainer() {
         return () => unsubscribeFromMessages();
     }, [selectedUser]);
 
-    useEffect(() => {
-        messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // GUARANTEED SCROLL TO BOTTOM
+    useLayoutEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        container.scrollTop = container.scrollHeight;
     }, [messages]);
+
 
     return (
         <>
             <ChatHeader />
 
-            <div className="flex-1 px-6 overflow-y-auto py-6">
+            <div
+                ref={containerRef}
+                className="flex-1 px-6 overflow-y-auto py-6">
                 {isMessagesLoading ? (
                     <MessagesLoadingSkeleton />
                 ) : messages.length === 0 ? (
@@ -108,19 +116,21 @@ function ChatContainer() {
                                                 ))}
 
                                             <span>
-                                                {new Date(msg.createdAt).toLocaleTimeString([], {
+                                                {new Date(msg.createdAt).toLocaleTimeString("en-US", {
                                                     hour: "2-digit",
                                                     minute: "2-digit",
+                                                    hour12: true,
                                                 })}
+                                                {/* {new Date(msg.createdAt).toLocaleTimeString([], {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })} */}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                             );
                         })}
-
-                        {/* Scroll anchor */}
-                        <div ref={messageEndRef} />
                     </div>
                 )}
             </div>
