@@ -3,6 +3,8 @@ import { getReceiverSocketId, io } from "../lib/socket.js";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
 
+
+
 export const getAllContacts = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
@@ -199,7 +201,7 @@ export const getChatPartners = async (req, res) => {
 //     const myId = req.user._id;
 //     const { id: userToChatId } = req.params;
 
-//     // ✅ Mark all incoming messages as seen
+//     // Mark all incoming messages as seen
 //     await Message.updateMany(
 //       { senderId: userToChatId, receiverId: myId, seen: false },
 //       { seen: true }

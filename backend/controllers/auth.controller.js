@@ -6,7 +6,6 @@ import { ENV } from "../lib/env.js";
 import cloudinary from "../lib/cloudinary.js";
 
 
-
 // Signup Authentication
 export const signup = async (req, res) => {
     try {
@@ -107,6 +106,7 @@ export const logout = (_, res) => {
     res.cookie("jwt", "", { maxAge: 0 });
     res.status(200).json({ message: "Logged out successfully" });
 };
+
 
 
 // Profile Update
