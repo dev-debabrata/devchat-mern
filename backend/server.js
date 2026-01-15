@@ -1,8 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import path from "path";
+// import path from "path";
 import cors from "cors";
-import { fileURLToPath } from "url";
+// import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
@@ -12,8 +12,8 @@ import { app, server } from "./lib/socket.js";
 
 
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.resolve();
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.resolve();
 
 const PORT = ENV.PORT || 5000;
 
@@ -35,15 +35,15 @@ app.use("/api/messages", messageRoutes);
 
 
 // PRODUCTION FRONTEND SERVE
-if (process.env.NODE_ENV === "production") {
-    const pathToFrontend = path.join(__dirname, '..', 'frontend', 'dist');
+// if (process.env.NODE_ENV === "production") {
+//     const pathToFrontend = path.join(__dirname, '..', 'frontend', 'dist');
 
-    app.use(express.static(pathToFrontend));
+//     app.use(express.static(pathToFrontend));
 
-    app.get(/.*/, (req, res) => {
-        res.sendFile(path.resolve(pathToFrontend, "index.html"));
-    });
-}
+//     app.get(/.*/, (req, res) => {
+//         res.sendFile(path.resolve(pathToFrontend, "index.html"));
+//     });
+// }
 
 
 server.listen(PORT, () => {
