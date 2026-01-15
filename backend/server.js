@@ -33,15 +33,19 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// ---------------- PRODUCTION FRONTEND SERVE ----------------
-if (ENV.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "frontend", "dist")));
 
-    app.get("/*", (req, res) => {
-        res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+
+// PRODUCTION FRONTEND SERVE
+if (process.env.NODE_ENV === "production") {
+    const pathToFrontend = path.join(__dirname, '..', 'frontend', 'dist');
+
+    app.use(express.static(pathToFrontend));
+
+    app.get(/.*/, (req, res) => {
+        res.sendFile(path.resolve(pathToFrontend, "index.html"));
     });
 }
-// -----------------------------------------------------------
+
 
 server.listen(PORT, () => {
     console.log("Server running on port: " + PORT)
