@@ -146,8 +146,8 @@ http://localhost:5173
 
 ## Author
 
-Debabrata Das
-🎓 B.Tech in Computer Science Engineering
+**Debabrata Das**  
+🎓 B.Tech in Computer Science Engineering  
 💻 MERN Stack Developer
 
 - GitHub: https://github.com/dev-debabrata
