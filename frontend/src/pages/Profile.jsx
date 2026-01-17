@@ -58,13 +58,6 @@ function Profile() {
         setIsSaving(false);
     };
 
-
-    // const handleSave = async () => {
-    //     setIsSaving(true);
-    //     await updateProfile({ fullName, about });
-    //     setIsSaving(false);
-    // };
-
     return (
         <div className="flex justify-center min-h-screen py-6 w-full">
             {/* SINGLE CONTAINER */}

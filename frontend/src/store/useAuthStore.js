@@ -73,7 +73,6 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.put("/auth/update-profile", data);
 
-      // 🔥 IMPORTANT: update Zustand state
       set({ authUser: res.data });
       toast.success("Profile updated successfully");
       return res.data;
@@ -106,7 +105,6 @@ export const useAuthStore = create((set, get) => ({
 
     set({ socket });
 
-    // listen for online users event
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
     });
