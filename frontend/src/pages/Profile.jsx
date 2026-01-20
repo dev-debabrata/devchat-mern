@@ -81,7 +81,9 @@ function Profile() {
 
                     {/* AVATAR */}
                     <div className="flex justify-center">
-                        <div className="relative group size-28">
+                        <div className="relative size-28"> {/* ✅ NO group here */}
+
+                            {/* Avatar Button */}
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
@@ -92,21 +94,12 @@ function Profile() {
                                     alt="Profile"
                                     className="size-full object-cover"
                                 />
-                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+
+                                {/* Camera Overlay */}
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition pointer-events-none">
                                     <CameraIcon className="text-white size-6" />
                                 </div>
                             </button>
-
-                            {/* Delete Icon */}
-                            {(selectedImg || authUser?.profilePic) && (
-                                <button
-                                    onClick={handleDeleteImage}
-                                    title="Remove photo"
-                                    className="absolute bottom-1 right-1 bg-red-600 hover:bg-red-800 p-1.5 rounded-full shadow-lg cursor-pointer"
-                                >
-                                    <Trash2 className="size-4 text-white" />
-                                </button>
-                            )}
 
                             <input
                                 ref={fileInputRef}
@@ -115,6 +108,18 @@ function Profile() {
                                 className="hidden"
                                 onChange={handleImageUpload}
                             />
+
+                            {/* Delete Button */}
+                            {(selectedImg || authUser?.profilePic) && (
+                                <button
+                                    type="button"
+                                    onClick={handleDeleteImage}
+                                    title="Remove photo"
+                                    className="absolute bottom-1 right-1 z-20 bg-red-600 hover:bg-red-800 p-1.5 rounded-full shadow-lg cursor-pointer"
+                                >
+                                    <Trash2 className="size-4 text-white" />
+                                </button>
+                            )}
                         </div>
                     </div>
 
