@@ -81,7 +81,7 @@ function Profile() {
 
                     {/* AVATAR */}
                     <div className="flex justify-center">
-                        <div className="relative size-28"> {/* ✅ NO group here */}
+                        <div className="relative size-28">
 
                             {/* Avatar Button */}
                             <button
