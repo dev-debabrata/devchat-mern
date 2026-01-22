@@ -23,7 +23,7 @@ function App() {
   const showFooter = location.pathname === "/login" || location.pathname === "/signup";
 
   return (
-    <div className="min-h-screen bg-stone-200 flex flex-col">
+    <div className="h-screen bg-stone-200 flex flex-col">
 
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center overflow-hidden">
