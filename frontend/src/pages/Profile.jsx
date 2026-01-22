@@ -59,7 +59,7 @@ function Profile() {
     };
 
     return (
-        <div className="flex justify-center min-h-screen md:py-6 w-full">
+        <div className="flex justify-center h-[800px] md:min-h-screen md:py-6 w-full">
             {/* SINGLE CONTAINER */}
             <div className="w-full md:max-w-5xl bg-stone-950 md:rounded-2xl shadow-2xl border border-stone-700">
 

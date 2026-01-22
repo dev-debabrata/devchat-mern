@@ -11,7 +11,7 @@ function UserProfileModal({ user, isOnline, onClose }) {
 
             {/* Modal box */}
             <div
-                className="relative bg-stone-900 w-full h-full md:w-full md:max-w-xl md:h-120 md:rounded-2xl p-4 md:p-8 z-10 shadow-xl"
+                className="relative bg-stone-900 w-[400px] md:max-w-xl md:h-120 md:rounded-2xl p-4 md:p-8 z-10 shadow-xl"
             >
                 {/* Mobile Back Arrow */}
                 <button
