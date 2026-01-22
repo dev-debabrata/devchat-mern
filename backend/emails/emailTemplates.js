@@ -16,7 +16,7 @@ export function createWelcomeEmailTemplate(name, clientURL) {
         style="width: 80px; height: 80px; margin-bottom: 20px; border-radius: 50%; background-color: #fafaf9; padding: 10px;">
       
       <h1 style="color: #fafaf9; margin: 0; font-size: 28px; font-weight: 500;">
-        Welcome to Messenger!
+        Welcome to DevChat!
       </h1>
     </div>
 
@@ -43,7 +43,7 @@ export function createWelcomeEmailTemplate(name, clientURL) {
       <div style="text-align: center; margin: 30px 0;">
         <a href="${clientURL}"
            style="background: linear-gradient(to right, #1c1917, #44403c); color: #fafaf9; text-decoration: none; padding: 12px 30px; border-radius: 50px; font-weight: 500; display: inline-block;">
-           Open Messenger
+           Open DevChat
         </a>
       </div>
       
@@ -52,7 +52,7 @@ export function createWelcomeEmailTemplate(name, clientURL) {
       
       <p style="margin-top: 25px; margin-bottom: 0;">
         Best regards,<br>
-        <strong>The Messenger Team</strong>
+        <strong>The DevChat Team</strong>
       </p>
     </div>
     

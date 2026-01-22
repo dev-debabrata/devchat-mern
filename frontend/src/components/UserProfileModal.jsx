@@ -43,7 +43,7 @@ function UserProfileModal({ user, isOnline, onClose }) {
 
                     {/* About */}
                     <p className="text-stone-400 text-sm bg-stone-800 p-4 rounded-xl w-full mt-4">
-                        {user.about || "Hey there! I'm using Chat App."}
+                        {user.about || "Hey there! I'm using DevChat."}
                     </p>
                 </div>
             </div>
