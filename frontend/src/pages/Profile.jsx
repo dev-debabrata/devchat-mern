@@ -59,12 +59,12 @@ function Profile() {
     };
 
     return (
-        <div className="flex justify-center min-h-screen py-6 w-full">
+        <div className="flex justify-center min-h-screen md:py-6 w-full">
             {/* SINGLE CONTAINER */}
-            <div className="w-full max-w-5xl bg-stone-950 rounded-2xl shadow-2xl border border-stone-700">
+            <div className="w-full md:max-w-5xl bg-stone-950 md:rounded-2xl shadow-2xl border border-stone-700">
 
                 {/* HEADER */}
-                <div className=" flex items-center gap-4 px-6 py-4 border-b border-stone-700 text-stone-200">
+                <div className="flex items-center gap-3 px-3 py-3 md:px-6 md:py-4 border-b border-stone-700 text-stone-200">
                     <button
                         onClick={() => navigate("/")}
                         className="p-2 bg-stone-800 rounded-md cursor-pointer hover:bg-stone-700 transition"
@@ -77,7 +77,7 @@ function Profile() {
                 </div>
 
                 {/* CONTENT */}
-                <div className="p-6 space-y-6 max-w-[500px] mx-auto mt-8">
+                <div className="p-4 md:p-6 space-y-5 md:space-y-6 md:max-w-[500px] mx-auto mt-4 md:mt-8">
 
                     {/* AVATAR */}
                     <div className="flex justify-center">

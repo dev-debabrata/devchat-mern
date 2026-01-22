@@ -13,7 +13,7 @@ function SignUpPage() {
     };
 
     return (
-        <div className="w-[450px] p-8 bg-stone-950 rounded-md shadow">
+        <div className="w-[400px] md:w-[450px] p-8 bg-stone-950 rounded-md shadow">
             <div className="text-center my-4">
                 <MessageCircleIcon className="w-12 h-12 mx-auto text-stone-200 mb-4" />
                 <h2 className="text-2xl font-bold text-stone-200 mb-2">Create Account</h2>

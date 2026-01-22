@@ -4,7 +4,7 @@ function ActiveTabSwitch() {
     const { activeTab, setActiveTab } = useChatStore();
 
     return (
-        <div className="flex bg-transparent p-2 m-2 gap-2">
+        <div className="flex bg-transparent p-2 mx-2 mt-2 gap-2">
             <button
                 onClick={() => setActiveTab("chats")}
                 className={`flex-1 py-2 rounded-md cursor-pointer transition ${activeTab === "chats"

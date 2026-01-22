@@ -1,4 +1,4 @@
-import { XIcon } from "lucide-react";
+import { ArrowLeft, XIcon } from "lucide-react";
 import { useChatStore } from "../store/useChatStore";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
@@ -50,52 +50,66 @@ function ChatHeader() {
     return (
         <>
             <div className="flex justify-between items-center bg-stone-900/50 border-b border-stone-500/50 max-h-[80px] px-6 flex-1 rounded-tr-2xl">
-                <div
-                    onClick={() => setShowModal(true)}
-                    className="flex items-center space-x-3 cursor-pointer"
-                >
-                    <div className="relative">
-                        <img
-                            src={selectedUser.profilePic || "/avatar.png"}
-                            alt={selectedUser.fullName}
-                            className="w-12 h-12 rounded-full object-cover"
-                        />
 
-                        {isOnline && (
-                            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-stone-800"></span>
-                        )}
-                    </div>
+                {/* LEFT: Back arrow (mobile only) + profile */}
+                <div className="flex items-center gap-3">
 
-                    <div>
-                        <h3 className="text-stone-200 font-medium">
-                            {selectedUser.fullName}
-                        </h3>
+                    {/* Mobile back button */}
+                    <button
+                        onClick={() => setSelectedUser(null)}
+                        className="md:hidden text-stone-300 hover:text-white"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div
+                        onClick={() => setShowModal(true)}
+                        className="flex items-center space-x-3 cursor-pointer"
+                    >
+                        <div className="relative">
+                            <img
+                                src={selectedUser.profilePic || "/avatar.png"}
+                                alt={selectedUser.fullName}
+                                className="w-12 h-12 rounded-full object-cover"
+                            />
 
-
-                        <p className="text-stone-400 text-sm flex items-center gap-1">
-                            {isTyping ? (
-                                <>
-                                    Typing
-                                    <span className="flex gap-1 mt-3">
-                                        <span className="w-1 h-1 bg-stone-400 rounded-full animate-bounce [animation-delay:0ms]"></span>
-                                        <span className="w-1 h-1 bg-stone-400 rounded-full animate-bounce [animation-delay:150ms]"></span>
-                                        <span className="w-1 h-1 bg-stone-400 rounded-full animate-bounce [animation-delay:300ms]"></span>
-                                    </span>
-                                </>
-                            ) : isOnline ? (
-                                "Online"
-                            ) : (
-                                "Offline"
+                            {isOnline && (
+                                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-stone-800"></span>
                             )}
-                        </p>
+                        </div>
 
-                        {/* <p className="text-stone-400 text-sm">
+                        <div>
+                            <h3 className="text-stone-200 font-medium">
+                                {selectedUser.fullName}
+                            </h3>
+
+
+                            <p className="text-stone-400 text-sm flex items-center gap-1">
+                                {isTyping ? (
+                                    <>
+                                        Typing
+                                        <span className="flex gap-1 mt-3">
+                                            <span className="w-1 h-1 bg-stone-400 rounded-full animate-bounce [animation-delay:0ms]"></span>
+                                            <span className="w-1 h-1 bg-stone-400 rounded-full animate-bounce [animation-delay:150ms]"></span>
+                                            <span className="w-1 h-1 bg-stone-400 rounded-full animate-bounce [animation-delay:300ms]"></span>
+                                        </span>
+                                    </>
+                                ) : isOnline ? (
+                                    "Online"
+                                ) : (
+                                    "Offline"
+                                )}
+                            </p>
+
+                            {/* <p className="text-stone-400 text-sm">
                             {isTyping ? "Typing..." : isOnline ? "Online" : "Offline"}
                         </p> */}
+                        </div>
                     </div>
                 </div>
 
-                <button onClick={() => setSelectedUser(null)}>
+                <button
+                    onClick={() => setSelectedUser(null)}
+                    className="hidden md:block">
                     <XIcon className="w-5 h-5 text-stone-400 hover:text-stone-200 transition-colors cursor-pointer" />
                 </button>
             </div>
