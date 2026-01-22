@@ -106,7 +106,7 @@ function MessageInput() {
 
             <form
                 onSubmit={handleSendMessage}
-                className="max-w-3xl mx-auto flex space-x-4"
+                className="max-w-3xl mx-auto flex space-x-2 md:space-x-4"
             >
                 <input
                     ref={inputRef}
@@ -116,7 +116,8 @@ function MessageInput() {
                         setText(e.target.value);
                         handleTyping();
                     }}
-                    className="flex-1 text-stone-100 bg-stone-900/50 border border-stone-500/50 rounded-lg py-2 px-4"
+                    className="flex-1 text-stone-100 bg-stone-900/50 border border-stone-500/50 rounded-lg py-2.5 px-3 md:py-2 md:px-4 focus:outline-none focus:border-cyan-500"
+
                     placeholder="Type your message..."
                 />
 

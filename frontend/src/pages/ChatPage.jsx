@@ -15,7 +15,7 @@ function ChatPage() {
 
 
     return (
-        <div className="relative flex w-full max-w-6xl h-[calc(100vh-2rem)] mx-auto overflow-hidden">
+        <div className="relative flex w-full max-w-6xl h-screen md:h-[calc(100vh-2rem)] mx-auto overflow-hidden">
             {/* LEFT SIDE */}
             <div
                 className={`bg-stone-950 flex flex-col shadow-2xl md:rounded-l-2xl w-full md:w-80 
