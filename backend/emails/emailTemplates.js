@@ -33,6 +33,7 @@ export function createWelcomeEmailTemplate(name, clientURL) {
         <p style="font-size: 16px; margin: 0 0 15px 0;"><strong>Get started in just a few steps:</strong></p>
         <ul style="padding-left: 20px; margin: 0;">
           <li style="margin-bottom: 10px;">Set up your profile picture</li>
+           <li style="margin-bottom: 10px;">Set up your about</li>
           <li style="margin-bottom: 10px;">Find and add your contacts</li>
           <li style="margin-bottom: 10px;">Start a conversation</li>
           <li style="margin-bottom: 0;">Share photos, videos, and more</li>

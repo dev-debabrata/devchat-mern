@@ -22,10 +22,6 @@ function ChatsList() {
     }, [getMyChatPartners]);
 
     useEffect(() => {
-        getMyChatPartners();
-    }, [getMyChatPartners]);
-
-    useEffect(() => {
         if (!socket) return;
 
         subscribeToMessages();

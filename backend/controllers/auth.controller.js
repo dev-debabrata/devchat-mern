@@ -119,7 +119,6 @@ export const logout = (req, res) => {
 // };
 
 
-
 // Profile Update
 export const updateProfile = async (req, res) => {
     try {
@@ -128,14 +127,13 @@ export const updateProfile = async (req, res) => {
 
         const updateData = {};
 
-        // Update name
-        if (fullName) updateData.fullName = fullName;
+        // Update name (allow empty string too)
+        if (fullName !== undefined) updateData.fullName = fullName;
 
-        // Update about
-        if (about) updateData.about = about;
+        // Update about (allow empty string too)
+        if (about !== undefined) updateData.about = about;
 
-
-        //  DELETE image
+        // DELETE image
         if (profilePic === null) {
             updateData.profilePic = null;
         }
@@ -165,6 +163,7 @@ export const updateProfile = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 
 

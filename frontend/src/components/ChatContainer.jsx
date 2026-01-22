@@ -1,11 +1,11 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import ChatHeader from "./ChatHeader";
 import NoChatHistoryPlaceholder from "./NoChatHistoryPlaceholder";
 import MessageInput from "./MessageInput";
 import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
-import { Check, CheckCheck } from "lucide-react";
+import { Check, CheckCheck, X } from "lucide-react";
 
 
 const formatDate = (date) => {
@@ -32,6 +32,11 @@ function ChatContainer() {
 
     const { authUser } = useAuthStore();
     const containerRef = useRef(null);
+
+    const [previewMedia, setPreviewMedia] = useState(null);
+    const [previewType, setPreviewType] = useState(null);
+
+
 
     // Fetch messages + socket
     useEffect(() => {
@@ -98,9 +103,25 @@ function ChatContainer() {
                                                 <img
                                                     src={msg.image}
                                                     alt="Shared"
-                                                    className="rounded-lg h-48 object-cover mb-1"
+                                                    onClick={() => {
+                                                        setPreviewMedia(msg.image);
+                                                        setPreviewType("image");
+                                                    }}
+                                                    className="rounded-lg h-48 object-cover mb-1 cursor-pointer hover:opacity-80"
                                                 />
                                             )}
+
+                                            {msg.video && (
+                                                <video
+                                                    src={msg.video}
+                                                    onClick={() => {
+                                                        setPreviewMedia(msg.video);
+                                                        setPreviewType("video");
+                                                    }}
+                                                    className="rounded-lg max-w-xs mb-1 cursor-pointer"
+                                                />
+                                            )}
+
 
                                             {msg.text && (
                                                 <p className="whitespace-pre-wrap">{msg.text}</p>
@@ -137,8 +158,80 @@ function ChatContainer() {
             </div>
 
             <MessageInput />
+
+            {previewMedia && (
+                <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+
+                    {/* Overlay click to close */}
+                    <div
+                        className="absolute inset-0"
+                        onClick={() => {
+                            setPreviewMedia(null);
+                            setPreviewType(null);
+                        }}
+                    />
+
+                    {/* Close button */}
+                    <button
+                        onClick={() => {
+                            setPreviewMedia(null);
+                            setPreviewType(null);
+                        }}
+                        className="absolute top-65 right-4 md:top-8 md:right-35 z-10 text-white bg-black/70 hover:bg-black/30 p-2 rounded-full cursor-pointer"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+
+                    {/* Image or Video */}
+                    {previewType === "image" ? (
+                        <img
+                            src={previewMedia}
+                            className="relative z-10 max-h-[90vh] max-w-[95vw] rounded-lg object-contain"
+                        />
+                    ) : (
+                        <video
+                            src={previewMedia}
+                            controls
+                            autoPlay
+                            className="relative z-10 max-h-[90vh] max-w-[95vw] rounded-lg"
+                        />
+                    )}
+                </div>
+            )}
+
+
         </>
     );
 }
 
 export default ChatContainer;
+
+
+// {
+//     previewMedia && (
+//         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+
+//             {/* Close Button */}
+//             <button
+//                 onClick={() => setPreviewImage(null)}
+//                 className="absolute top-65 right-4 md:top-8 md:right-35 z-10 text-white bg-black/70 hover:bg-black/30 p-2 rounded-full cursor-pointer"
+//             >
+//                 <X className="w-6 h-6" />
+//             </button>
+
+//             {/* Image */}
+//             <img
+//                 src={previewImage}
+//                 alt="Preview"
+//                 className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-lg"
+//                 onClick={(e) => e.stopPropagation()}
+//             />
+
+//             {/* Click outside to close */}
+//             <div
+//                 className="absolute inset-0"
+//                 onClick={() => setPreviewImage(null)}
+//             />
+//         </div>
+//     )
+// }

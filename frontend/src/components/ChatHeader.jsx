@@ -23,7 +23,6 @@ function ChatHeader() {
         return () => window.removeEventListener("keydown", handleEscKey);
     }, [setSelectedUser]);
 
-    // 👇 Typing listener
     useEffect(() => {
         if (!socket || !selectedUser) return;
 

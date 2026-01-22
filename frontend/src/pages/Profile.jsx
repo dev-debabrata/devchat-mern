@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CameraIcon, LoaderIcon, Trash2 } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
@@ -14,6 +14,14 @@ function Profile() {
     const fileInputRef = useRef(null);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (authUser) {
+            setFullName(authUser.fullName || "");
+            setAbout(authUser.about || "");
+        }
+    }, [authUser]);
+
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];

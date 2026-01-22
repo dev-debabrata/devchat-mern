@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
         },
         about: {
             type: String,
-            default: "",
+            default: "Hey there! I'm using DevChat.",
             maxlength: 200,
         },
     },
