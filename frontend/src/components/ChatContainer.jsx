@@ -58,7 +58,7 @@ function ChatContainer() {
 
             <div
                 ref={containerRef}
-                className="flex-1 px-3 md:px-6 py-4 md:py-6 overflow-y-auto overscroll-contain">
+                className="flex-1 px-6 overflow-y-auto py-6">
                 {isMessagesLoading ? (
                     <MessagesLoadingSkeleton />
                 ) : messages.length === 0 ? (
