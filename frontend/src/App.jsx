@@ -26,7 +26,7 @@ function App() {
     <div className="min-h-screen bg-stone-200 flex flex-col">
 
       {/* Main content */}
-      <div className="flex-1 w-full overflow-hidden md:flex md:items-center md:justify-center">
+      <div className="flex-1 flex items-center justify-center overflow-hidden">
         <Routes>
           <Route path="/" element={authUser ? <ChatPage /> : <Navigate to={"/login"} />} />
           <Route path="/profile" element={authUser ? <Profile /> : <Navigate to={"/login"} />} />
