@@ -125,7 +125,6 @@ export const getChatPartners = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
 
-    // 1. Get last message per conversation
     const conversations = await Message.aggregate([
       {
         $match: {
@@ -135,39 +134,27 @@ export const getChatPartners = async (req, res) => {
           ],
         },
       },
+      { $sort: { createdAt: -1 } },
       {
-        $project: {
-          chatPartner: {
+        $group: {
+          _id: {
             $cond: [
               { $eq: ["$senderId", loggedInUserId] },
               "$receiverId",
               "$senderId",
             ],
           },
-          createdAt: 1,
+          lastMessage: { $first: "$$ROOT" },
         },
       },
-      {
-        $group: {
-          _id: "$chatPartner",
-          lastMessageAt: { $max: "$createdAt" },
-        },
-      },
-      {
-        $sort: { lastMessageAt: -1 },
-      },
+      { $sort: { "lastMessage.createdAt": -1 } },
     ]);
 
     const partnerIds = conversations.map((c) => c._id);
 
     const users = await User.find({ _id: { $in: partnerIds } }).select("-password");
 
-    // Maintain sorted order
-    const orderedUsers = partnerIds.map((id) =>
-      users.find((u) => u._id.toString() === id.toString())
-    );
-
-    // Get unread counts
+    // unread counts
     const unreadCounts = await Message.aggregate([
       {
         $match: {
@@ -188,10 +175,22 @@ export const getChatPartners = async (req, res) => {
       unreadMap[u._id.toString()] = u.count;
     });
 
-    const final = orderedUsers.map((user) => ({
-      ...user.toObject(),
-      unreadCount: unreadMap[user._id.toString()] || 0,
-    }));
+    const final = conversations.map((conv) => {
+      const user = users.find(
+        (u) => u._id.toString() === conv._id.toString()
+      );
+
+      return {
+        ...user.toObject(),
+        unreadCount: unreadMap[user._id.toString()] || 0,
+        lastMessage: {
+          text: conv.lastMessage.text,
+          image: conv.lastMessage.image,
+          senderId: conv.lastMessage.senderId,
+          createdAt: conv.lastMessage.createdAt,
+        },
+      };
+    });
 
     res.status(200).json(final);
   } catch (error) {
@@ -199,4 +198,86 @@ export const getChatPartners = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+
+
+// export const getChatPartners = async (req, res) => {
+//   try {
+//     const loggedInUserId = req.user._id;
+
+//     // 1. Get last message per conversation
+//     const conversations = await Message.aggregate([
+//       {
+//         $match: {
+//           $or: [
+//             { senderId: loggedInUserId },
+//             { receiverId: loggedInUserId },
+//           ],
+//         },
+//       },
+//       {
+//         $project: {
+//           chatPartner: {
+//             $cond: [
+//               { $eq: ["$senderId", loggedInUserId] },
+//               "$receiverId",
+//               "$senderId",
+//             ],
+//           },
+//           createdAt: 1,
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: "$chatPartner",
+//           lastMessageAt: { $max: "$createdAt" },
+//         },
+//       },
+//       {
+//         $sort: { lastMessageAt: -1 },
+//       },
+//     ]);
+
+//     const partnerIds = conversations.map((c) => c._id);
+
+//     const users = await User.find({ _id: { $in: partnerIds } }).select("-password");
+
+//     // Maintain sorted order
+//     const orderedUsers = partnerIds.map((id) =>
+//       users.find((u) => u._id.toString() === id.toString())
+//     );
+
+//     // Get unread counts
+//     const unreadCounts = await Message.aggregate([
+//       {
+//         $match: {
+//           receiverId: loggedInUserId,
+//           seen: false,
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: "$senderId",
+//           count: { $sum: 1 },
+//         },
+//       },
+//     ]);
+
+//     const unreadMap = {};
+//     unreadCounts.forEach((u) => {
+//       unreadMap[u._id.toString()] = u.count;
+//     });
+
+//     const final = orderedUsers.map((user) => ({
+//       ...user.toObject(),
+//       unreadCount: unreadMap[user._id.toString()] || 0,
+//     }));
+
+//     res.status(200).json(final);
+//   } catch (error) {
+//     console.error("Error in getChatPartners:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
 

@@ -15,7 +15,7 @@ function ChatsList() {
         unsubscribeFromMessages,
     } = useChatStore();
 
-    const { onlineUsers, socket } = useAuthStore();
+    const { authUser, onlineUsers, socket } = useAuthStore();
 
     useEffect(() => {
         getMyChatPartners();
@@ -55,9 +55,36 @@ function ChatsList() {
                                     <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-stone-900"></span>
                                 )}
                             </div>
-                            <h4 className="text-stone-200 font-medium truncate">
+
+                            <div className="flex flex-col">
+                                <h4 className="text-stone-200 font-medium truncate">
+                                    {chat.fullName}
+                                </h4>
+
+                                <p className="text-stone-400 text-sm truncate max-w-[200px]">
+                                    {chat.lastMessage ? (
+                                        <>
+                                            {String(chat.lastMessage.senderId) === String(authUser._id)
+                                                ? "You: "
+                                                : ""}
+
+                                            {chat.lastMessage.text
+                                                ? chat.lastMessage.text
+                                                : chat.lastMessage.image
+                                                    ? "📷 Photo"
+                                                    : chat.lastMessage.video
+                                                        ? "🎥 Video"
+                                                        : ""}
+                                        </>
+                                    ) : (
+                                        "No messages yet"
+                                    )}
+                                </p>
+                            </div>
+
+                            {/* <h4 className="text-stone-200 font-medium truncate">
                                 {chat.fullName}
-                            </h4>
+                            </h4> */}
                         </div>
 
                         {chat.unreadCount > 0 && (

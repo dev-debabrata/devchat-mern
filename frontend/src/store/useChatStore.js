@@ -159,6 +159,15 @@ export const useChatStore = create((set, get) => ({
 
         const updatedChat = {
           ...chat,
+
+          lastMessage: {
+            text: newMessage.text || null,
+            image: newMessage.image || null,
+            video: newMessage.video || null,
+            senderId: newMessage.senderId,
+            createdAt: newMessage.createdAt,
+          },
+
           unreadCount:
             selectedUser && String(selectedUser._id) === partnerId
               ? 0
@@ -197,6 +206,22 @@ export const useChatStore = create((set, get) => ({
 
 
 
+// if (index !== -1) {
+//   const chat = updatedChats[index];
+
+//   const updatedChat = {
+//     ...chat,
+//     unreadCount:
+//       selectedUser && String(selectedUser._id) === partnerId
+//         ? 0
+//         : (chat.unreadCount || 0) + (isMine ? 0 : 1),
+//   };
+
+//   updatedChats.splice(index, 1);
+//   updatedChats.unshift(updatedChat);
+
+//   set({ chats: updatedChats });
+// }
 
 // sendMessage: async (messageData) => {
 //   const { selectedUser, messages } = get();
